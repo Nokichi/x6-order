@@ -1,0 +1,17 @@
+CREATE SCHEMA x6;
+
+CREATE TABLE x6.order
+(
+    id         SERIAL PRIMARY KEY,
+    user_id    SERIAL NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE x6.cart
+(
+    order_id   INT REFERENCES x6.order (id),
+    product_id INT NOT NULL,
+    count      INT NOT NULL             DEFAULT 1,
+    added_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
