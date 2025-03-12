@@ -10,9 +10,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.jabka.x6order.client.ProductClient;
 import ru.jabka.x6order.exception.BadRequestException;
 import ru.jabka.x6order.model.Product;
+import ru.jabka.x6order.model.ProductExists;
 import ru.jabka.x6order.repository.CartRepository;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @ExtendWith(MockitoExtension.class)
 class CartServiceTest {
@@ -29,8 +33,11 @@ class CartServiceTest {
     void addProducts_success() {
         Long orderId = 1L;
         Set<Product> validProducts = getValidProducts();
+        Set<Long> ids = validProducts.stream().map(Product::productId).collect(Collectors.toSet());
+        Map<Long, Boolean> productCheckList = new HashMap<>();
+        ids.forEach(x -> productCheckList.put(x, true));
         validProducts.forEach(product ->
-                Mockito.when(productClient.isProductExists(product.productId())).thenReturn(true));
+                Mockito.when(productClient.isProductExists(ids)).thenReturn(new ProductExists(productCheckList)));
         cartService.addProducts(orderId, validProducts);
         Mockito.verify(cartRepository).insert(orderId, validProducts);
     }
@@ -59,8 +66,11 @@ class CartServiceTest {
                         .count(0)
                         .build()
         );
+        Set<Long> ids = products.stream().map(Product::productId).collect(Collectors.toSet());
+        Map<Long, Boolean> productCheckList = new HashMap<>();
+        ids.forEach(x -> productCheckList.put(x, true));
         products.forEach(product ->
-                Mockito.when(productClient.isProductExists(product.productId())).thenReturn(true));
+                Mockito.when(productClient.isProductExists(ids)).thenReturn(new ProductExists(productCheckList)));
         final BadRequestException exception = Assertions.assertThrows(
                 BadRequestException.class,
                 () -> cartService.addProducts(orderId, products)
@@ -73,13 +83,17 @@ class CartServiceTest {
     void addProducts_error_productNotFound() {
         Long orderId = 1L;
         Set<Product> products = getValidProducts();
-        Product product = products.iterator().next();
-        Mockito.when(productClient.isProductExists(product.productId())).thenReturn(false);
+        Set<Long> ids = products.stream().map(Product::productId).collect(Collectors.toSet());
+        Map<Long, Boolean> productCheckList = new HashMap<>();
+        ids.forEach(x -> productCheckList.put(x, true));
+        Product invalidProduct = products.iterator().next();
+        productCheckList.put(invalidProduct.productId(), false);
+        Mockito.when(productClient.isProductExists(ids)).thenReturn(new ProductExists(productCheckList));
         final BadRequestException exception = Assertions.assertThrows(
                 BadRequestException.class,
                 () -> cartService.addProducts(orderId, products)
         );
-        Assertions.assertEquals(exception.getMessage(), String.format("Продукт с id %d не найден!", product.productId()));
+        Assertions.assertEquals(exception.getMessage(), String.format("Продукт с id %d не найден!", invalidProduct.productId()));
         Mockito.verify(cartRepository, Mockito.never()).insert(Mockito.any(), Mockito.anySet());
     }
 

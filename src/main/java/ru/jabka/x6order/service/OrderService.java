@@ -19,18 +19,22 @@ public class OrderService {
     private final UserClient userClient;
     private final CartService cartService;
 
-    private Order initOrder(final Long userId) {
-        ofNullable(userId).orElseThrow(() -> new BadRequestException("Заполните id пользователя, создающего заказ"));
-        if (!userClient.isUserExists(userId)) {
-            throw new BadRequestException(String.format("Пользователь с id %d не найден!", userId));
-        }
-        return orderRepository.insert(userId);
-    }
-
     @Transactional(rollbackFor = Throwable.class)
     public OrderResponse createOrder(OrderRequest request) {
         Order order = initOrder(request.userId());
         cartService.addProducts(order.id(), request.products());
         return new OrderResponse(order.id());
+    }
+
+    private Order initOrder(final Long userId) {
+        validateUser(userId);
+        return orderRepository.insert(userId);
+    }
+
+    private void validateUser(final Long userId) {
+        ofNullable(userId).orElseThrow(() -> new BadRequestException("Заполните id пользователя, создающего заказ"));
+        if (!userClient.isUserExists(userId)) {
+            throw new BadRequestException(String.format("Пользователь с id %d не найден!", userId));
+        }
     }
 }
