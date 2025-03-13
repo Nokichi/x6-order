@@ -10,6 +10,7 @@ import ru.jabka.x6order.model.mapper.OrderMapper;
 @Repository
 @RequiredArgsConstructor
 public class OrderRepository {
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final OrderMapper orderMapper;
 

@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 
 @Component
 public class OrderMapper implements RowMapper<Order> {
+
     @Override
     public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
         return Order.builder()

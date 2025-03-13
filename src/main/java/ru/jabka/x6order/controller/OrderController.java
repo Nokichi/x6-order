@@ -15,6 +15,7 @@ import ru.jabka.x6order.service.OrderService;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/order")
 public class OrderController {
+
     private final OrderService orderService;
 
     @PostMapping

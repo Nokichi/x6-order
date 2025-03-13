@@ -11,6 +11,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 @Configuration
 @ConfigurationProperties("services")
 public class ServicesConfiguration {
+
     private String userServiceUrl;
     private String productServiceUrl;
 

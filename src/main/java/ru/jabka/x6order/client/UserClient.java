@@ -8,6 +8,7 @@ import ru.jabka.x6order.model.UserExists;
 @Component
 @RequiredArgsConstructor
 public class UserClient {
+
     private final RestTemplate userService;
 
     public boolean isUserExists(Long userId) {

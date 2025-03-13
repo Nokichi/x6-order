@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class ProductClient {
+
     private final RestTemplate productService;
 
     public ProductExists isProductExists(Set<Long> productIds) {

@@ -10,6 +10,7 @@ import java.util.Set;
 @Repository
 @RequiredArgsConstructor
 public class CartRepository {
+
     private final JdbcTemplate jdbcTemplate;
     private static final String INSERT = """
             INSERT INTO x6.cart (order_id, product_id, count)
