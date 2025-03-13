@@ -21,12 +21,12 @@ public class OrderService {
 
     @Transactional(rollbackFor = Throwable.class)
     public OrderResponse createOrder(OrderRequest request) {
-        Order order = initOrder(request.userId());
+        Order order = createOrder(request.userId());
         cartService.addProducts(order.id(), request.products());
         return new OrderResponse(order.id());
     }
 
-    private Order initOrder(final Long userId) {
+    private Order createOrder(final Long userId) {
         validateUser(userId);
         return orderRepository.insert(userId);
     }
