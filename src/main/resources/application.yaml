@@ -6,8 +6,21 @@ spring:
     url: jdbc:postgresql://localhost:5432/x6_order
     username: test
     password: ${DB_PG_PWD}
+  rabbitmq:
+    addresses: localhost:5672
+    username: guest
+    password: ${RABBITMQ_PWD}
+    virtual-host: x6-host
+logging:
+  level:
+    org.springframework.amqp: DEBUG
+    com.rabbitmq.client: DEBUG
 server:
   port: ${APP_PORT:8080}
 services:
   user-service-url: http://localhost:8081
   product-service-url: http://localhost:8082
+app:
+  rabbitmq:
+    queue: notification-service.log-queue
+    exchange: notification-exchange
